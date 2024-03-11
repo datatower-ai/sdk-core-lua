@@ -418,7 +418,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userSet(acId, dtId, properties)
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_set", nil, properties, self.checkKeyAndValue)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "user", "#user_set", properties, self.checkKeyAndValue)
     if ok then
         return ret
     end
@@ -429,7 +429,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userSetOnce(acId, dtId, properties)
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_set_once", nil, properties, self.checkKeyAndValue)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "user", "#user_set_once", properties, self.checkKeyAndValue)
     if ok then
         return ret
     end
@@ -440,7 +440,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userAdd(acId, dtId, properties)
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_add", nil, properties, self.checkKeyAndValue)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "user", "#user_add", properties, self.checkKeyAndValue)
     if ok then
         return ret
     end
@@ -451,7 +451,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userAppend(acId, dtId, properties)
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_append", nil, properties, self.checkKeyAndValue)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "user", "#user_append", properties, self.checkKeyAndValue)
     if ok then
         return ret
     end
@@ -462,7 +462,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userUniqAppend(acId, dtId, properties)
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_uniq_append", nil, properties, self.checkKeyAndValue)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "user", "#user_uniq_append", properties, self.checkKeyAndValue)
     if ok then
         return ret
     end
@@ -481,7 +481,7 @@ function DTAnalytics:userUnset(acId, dtId, properties)
             unSetProperties[key] = 0
         end
     end
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_unset", nil, unSetProperties, self.checkKeyAndValue)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "user", "#user_unset", unSetProperties, self.checkKeyAndValue)
     if ok then
         return ret
     end
@@ -491,7 +491,7 @@ end
 ---@param acId string
 ---@param dtId string
 function DTAnalytics:userDelete(acId, dtId, properties)
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_delete", nil, properties, self.checkKeyAndValue)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "user", "#user_delete", properties, self.checkKeyAndValue)
     if ok then
         return ret
     end
