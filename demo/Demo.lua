@@ -1,5 +1,5 @@
 package.path = package.path .. ";../?.lua"
-local dtAnalytics = require("DataTowerSdkLua.DataTowerSdk")
+local dtAnalytics = require("src.DataTowerSdk")
 
 local function getLogConsumer()
 	return dtAnalytics.DTLogConsumer("./log", dtAnalytics.LOG_RULE.HOUR, 200, 500)

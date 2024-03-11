@@ -1,4 +1,29 @@
 -- DT LuaSDK
+function script_path()
+    local str = debug.getinfo(2, "S").source:sub(2)
+    return str:match("(.*/)")
+end
+package.cpath = package.cpath .. ";" .. script_path() .. "?.so"
+
+function split (inputstr, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local t={}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        table.insert(t, str)
+    end
+    return t
+end
+local version_list = split(_VERSION:sub(5), ".");
+local interpreter_version = version_list[1] .. version_list[2]
+
+local dt_base
+if interpreter_version == "51" then
+    dt_base = require("lua" .. interpreter_version .. "-dt_core_lua")
+else
+    dt_base = require("dt_core_lua-lua" .. interpreter_version)
+end
 local socket = require("socket")
 local cjson = require("cjson")
 local Util = {}
@@ -184,7 +209,11 @@ local function upload(consumer, dtId, acId, eventType, eventName, properties, su
     mergeProperties["#sdk_version_name"] = DTAnalytics.version
     mergeProperties = Util.mergeTables(mergeProperties, finalProperties)
     eventJson["properties"] = mergeProperties
-    local ret = consumer:add(eventJson)
+
+    local ret = 0;
+    if dt_base.verify_event(eventJson) then
+        ret = consumer:add(eventJson)
+    end
     presetProperties = nil
     finalProperties = nil
     mergeProperties = nil
@@ -461,8 +490,8 @@ end
 --- Delete a user, This operation cannot be undone
 ---@param acId string
 ---@param dtId string
-function DTAnalytics:userDelete(acId, dtId)
-    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_delete", nil, {}, self.checkKeyAndValue)
+function DTAnalytics:userDelete(acId, dtId, properties)
+    local ok, ret = pcall(upload, self.consumer, dtId, acId, "#user_delete", nil, properties, self.checkKeyAndValue)
     if ok then
         return ret
     end

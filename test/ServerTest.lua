@@ -19,9 +19,8 @@ Run Client:
         }).then(console.log)
 
 ]]--
-
 package.path = package.path .. ";../?.lua"
-local dtAnalytics = require("DataTowerSdkLua.DataTowerSdk")
+local dtAnalytics = require("src.DataTowerSdk")
 
 dtAnalytics.enableLog(true)
 
@@ -124,12 +123,13 @@ local function reply(myserver, stream) -- luacheck: ignore 212
             additional_text = "userUniqAppend, available parameters: \"dt_id\", \"acid\", \"props\""
         elseif path == "/userDelete" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userDelete (expecting: \"dt_id\", \"acid\") with " .. body_str)
+            print("[DT ServerTest] Received /userDelete (expecting: \"dt_id\", \"acid\", \"props\") with " .. body_str)
             local body = cjson.decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
-            sdk:userDelete(acid, dt_id)
-            additional_text = "userDelete, available parameters: \"dt_id\", \"acid\""
+            local props = body["props"] or nil
+            sdk:userDelete(acid, dt_id, props)
+            additional_text = "userAppend, available parameters: \"dt_id\", \"acid\", \"props\""
         elseif path == "/userAdd" then
             local body_str = stream:get_body_as_string()
             print("[DT ServerTest] Received /userAdd with " .. body_str)
@@ -182,7 +182,7 @@ local myserver = assert(http_server.listen {
 assert(myserver:listen())
 do
     local bound_port = select(3, myserver:localname())
-    assert(io.stderr:write(string.format("Now listening on port %d\n", bound_port)))
+    assert(io.stderr:write(string.format("[DT ServerTest] Now listening on port %d\n", bound_port)))
 end
 -- Start the main server loop
 assert(myserver:loop())
