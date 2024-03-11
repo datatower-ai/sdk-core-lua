@@ -294,6 +294,7 @@ function DTAnalytics.DTLogConsumer:flush()
     if #self.eventArrayJson == 0 then
         return true
     end
+    print("===> " .. #self.eventArrayJson)
     local isFileNameChange = false
     if self.rule == DTAnalytics.LOG_RULE.HOUR then
         isFileNameChange = Util.getDateFromDateTime(self.currentFileTime) ~= os.date("%Y-%m-%d")
@@ -319,7 +320,7 @@ function DTAnalytics.DTLogConsumer:flush()
     end
 
     local data = ""
-    for key, value in pairs(self.eventArrayJson) do
+    for _, value in pairs(self.eventArrayJson) do
         local json = Util.toJson(value)
         data = data .. json .. "\n"
     end
@@ -568,15 +569,15 @@ function Util.mkdirFolder(path)
     if (fileExists(path)) then
         return path
     end
-    local isWindows = isWindows()
+    local isWindowsOs = isWindows()
     local cmd = "mkdir -p " .. path
-    if (isWindows) then
+    if (isWindowsOs) then
         cmd = "mkdir " .. path
     end
     local retTable = { os.execute(cmd) }
     local code = retTable[3] or retTable[1]
     if (code ~= 0) then
-        if (isWindows) then
+        if (isWindowsOs) then
             return os.getenv("TEMP")
         else
             return "/tmp"
@@ -606,9 +607,9 @@ function Util.writeFile(fileName, eventArrayJson)
 end
 
 function Util.getFileName(filePath, fileNamePrefix, rule)
-    local isWindows = isWindows()
+    local isWindowsOs = isWindows()
     local separator = "/"
-    if (isWindows) then
+    if (isWindowsOs) then
         separator = "\\"
     end
     local fileName
@@ -633,7 +634,7 @@ function Util.getFileHandlerAndCount(currentFile, fileName, fileSize, count)
         count = 0
     end
 
-    local finalFileName = nil
+    local finalFileName
     local file = currentFile
 
     while file
