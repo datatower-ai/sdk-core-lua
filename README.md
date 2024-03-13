@@ -10,7 +10,8 @@
 
 # DataTower.ai - Core - Lua | Server
 
-> **🚧 Work In Progress**
+> **🚧 Work In Progress**  
+> This SDK is intended to work with [FileScout]().
 
 ## Getting Started
 1. Install Prerequisites (See section below).
@@ -24,5 +25,4 @@
 
 ## Install Prerequisites
 - `luarocks install uuid`
-- `luarocks install lua-cjson`
 - `luarocks install luasocket`
