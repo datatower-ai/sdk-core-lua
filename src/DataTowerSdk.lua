@@ -137,6 +137,7 @@ end)
 ---@param enable boolean
 function DTAnalytics.enableLog(enable)
     DTLog.enable = enable
+    dt_base.enable_log(enable)
 end
 
 --- Set common properties

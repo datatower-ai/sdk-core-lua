@@ -29,7 +29,7 @@ local sdk = dtAnalytics(consumer)
 
 ---
 
-local cjson = require("cjson")
+local json = require("JSON")
 local http_server = require("http.server")
 local http_headers = require "http.headers"
 
@@ -68,77 +68,77 @@ local function reply(myserver, stream) -- luacheck: ignore 212
 
         if path == "/track" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /track (expecting: \"dt_id\", \"acid\", \"event_name\", \"props\") with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /track " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local event_name = body["event_name"] or nil
             local props = body["props"] or nil
             sdk:track(acid, dt_id, event_name, props)
-            additional_text = "track, available parameters: \"dt_id\", \"acid\", \"event_name\", \"props\""
+            additional_text = "track"
         elseif path == "/userSet" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userSet (expecting: \"dt_id\", \"acid\", \"props\") with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /userSet " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local props = body["props"] or nil
             sdk:userSet(acid, dt_id, props)
-            additional_text = "userSet, available parameters: \"dt_id\", \"acid\", \"props\""
+            additional_text = "userSet"
         elseif path == "/userSetOnce" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userSetOnce (expecting:\"dt_id\", \"acid\", \"props\") with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /userSetOnce " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local props = body["props"] or nil
             sdk:userSetOnce(acid, dt_id, props)
-            additional_text = "userSetOnce, available parameters: \"dt_id\", \"acid\", \"props\""
+            additional_text = "userSetOnce"
         elseif path == "/userUnset" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userUnset (expecting: \"dt_id\", \"acid\", \"props\") with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /userUnset " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local props = body["props"] or nil
             sdk:userUnset(acid, dt_id, props)
-            additional_text = "userUnset, available parameters: \"dt_id\", \"acid\", \"props\""
+            additional_text = "userUnset"
         elseif path == "/userAppend" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userAppend (expecting: \"dt_id\", \"acid\", \"props\") with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /userAppend " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local props = body["props"] or nil
             sdk:userAppend(acid, dt_id, props)
-            additional_text = "userAppend, available parameters: \"dt_id\", \"acid\", \"props\""
+            additional_text = "userAppend"
         elseif path == "/userUniqAppend" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userUniqAppend (expecting: \"dt_id\", \"acid\", \"props\") with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /userUniqAppend " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local props = body["props"] or nil
             sdk:userUniqAppend(acid, dt_id, props)
-            additional_text = "userUniqAppend, available parameters: \"dt_id\", \"acid\", \"props\""
+            additional_text = "userUniqAppend"
         elseif path == "/userDelete" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userDelete (expecting: \"dt_id\", \"acid\", \"props\") with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /userDelete " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local props = body["props"] or nil
             sdk:userDelete(acid, dt_id, props)
-            additional_text = "userAppend, available parameters: \"dt_id\", \"acid\", \"props\""
+            additional_text = "userAppend"
         elseif path == "/userAdd" then
             local body_str = stream:get_body_as_string()
-            print("[DT ServerTest] Received /userAdd with " .. body_str)
-            local body = cjson.decode(body_str)
+            print("[DT ServerTest] Received /userAdd " .. body_str)
+            local body = json:decode(body_str)
             local dt_id = body["dt_id"] or nil
             local acid = body["acid"] or nil
             local props = body["props"] or nil
             sdk:userAdd(acid, dt_id, props)
-            additional_text = "userAdd, available parameters: \"dt_id\", \"acid\", \"props\""
+            additional_text = "userAdd"
         elseif path == "/flush" then
             print("[DT ServerTest] Received /flush")
             sdk:flush()
@@ -150,6 +150,10 @@ local function reply(myserver, stream) -- luacheck: ignore 212
             print("[DT ServerTest] Closing...")
             additional_text = "close"
             myserver:close()
+        elseif path == "/enable_log" then
+            dtAnalytics.enableLog(true)
+        elseif path == "/disable_log" then
+            dtAnalytics.enableLog(false)
         end
     end
 
