@@ -1,9 +1,19 @@
 -- DT LuaSDK
+function getDivider()
+    return package.config:sub(1,1)
+end
+function getDynSuffix()
+    return package.config:sub(1,1) == "\\" and "dll" or "so"
+end
 function script_path()
     local str = debug.getinfo(2, "S").source:sub(2)
-    return str:match("(.*/)")
+    local result = str:match("(.*" .. getDivider() .. ")")
+    if result == nil then
+        return ""
+    end
+    return result
 end
-package.cpath = package.cpath .. ";" .. script_path() .. "?.so"
+package.cpath = package.cpath .. ";" .. script_path() .. "?." .. getDynSuffix() .. ";"
 local dt_base = require("dt_core_lua")
 
 local socket = require("socket")
@@ -52,7 +62,7 @@ local function divide(properties)
     for key, value in pairs(properties) do
         if (key == "#android_id" or key == "#event_syn" or key == "#bundle_id" or key == "#event_time"
                 or key == "#app_id" or key == "#gaid" or key == "#dt_id" or key == "#acid"
-                or key == "#event_name" or key == "#event_type"
+                or key == "#event_name" or key == "#event_type" or key == "#debug"
         ) then
             presetProperties[key] = value
         else
@@ -198,7 +208,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userSet(acId, dtId, properties)
-    local ok, ret = pcall(upload, dtId, acId, "user", "#user_set", properties)
+    local ok, ret = pcall(upload, dtId, acId, "user", "#user_set", properties, self.debug)
     if ok then
         return ret
     end
@@ -209,7 +219,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userSetOnce(acId, dtId, properties)
-    local ok, ret = pcall(upload, dtId, acId, "user", "#user_set_once", properties)
+    local ok, ret = pcall(upload, dtId, acId, "user", "#user_set_once", properties, self.debug)
     if ok then
         return ret
     end
@@ -220,7 +230,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userAdd(acId, dtId, properties)
-    local ok, ret = pcall(upload, dtId, acId, "user", "#user_add", properties)
+    local ok, ret = pcall(upload, dtId, acId, "user", "#user_add", properties, self.debug)
     if ok then
         return ret
     end
@@ -231,7 +241,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userAppend(acId, dtId, properties)
-    local ok, ret = pcall(upload, dtId, acId, "user", "#user_append", properties)
+    local ok, ret = pcall(upload, dtId, acId, "user", "#user_append", properties, self.debug)
     if ok then
         return ret
     end
@@ -242,7 +252,7 @@ end
 ---@param dtId string
 ---@param properties table
 function DTAnalytics:userUniqAppend(acId, dtId, properties)
-    local ok, ret = pcall(upload, dtId, acId, "user", "#user_uniq_append", properties)
+    local ok, ret = pcall(upload, dtId, acId, "user", "#user_uniq_append", properties, self.debug)
     if ok then
         return ret
     end
@@ -261,7 +271,7 @@ function DTAnalytics:userUnset(acId, dtId, properties)
             unSetProperties[key] = 0
         end
     end
-    local ok, ret = pcall(upload, dtId, acId, "user", "#user_unset", unSetProperties)
+    local ok, ret = pcall(upload, dtId, acId, "user", "#user_unset", unSetProperties, self.debug)
     if ok then
         return ret
     end
@@ -271,7 +281,7 @@ end
 ---@param acId string
 ---@param dtId string
 function DTAnalytics:userDelete(acId, dtId, properties)
-    local ok, ret = pcall(upload, dtId, acId, "user", "#user_delete", properties)
+    local ok, ret = pcall(upload, dtId, acId, "user", "#user_delete", properties, self.debug)
     if ok then
         return ret
     end
@@ -283,7 +293,7 @@ end
 ---@param eventName string
 ---@param properties table
 function DTAnalytics:track(acId, dtId, eventName, properties)
-    local ok, ret = pcall(upload, dtId, acId, "track", eventName, properties, self.superProperties, self.dynamicSuperPropertiesTracker)
+    local ok, ret = pcall(upload, dtId, acId, "track", eventName, properties, self.superProperties, self.dynamicSuperPropertiesTracker, self.debug)
     if ok then
         return ret
     end

@@ -1,8 +1,11 @@
-package.path = package.path .. ";../?.lua"
+function getDivider()
+    return package.config:sub(1,1)
+end
+package.path = package.path .. ";.." .. getDivider() .. "?.lua"
 local dtAnalytics = require("src.DataTowerSdk")
 
 local function getLogConsumer()
-return dtAnalytics.DTLogConsumer("./log", 200, 10000)
+return dtAnalytics.DTLogConsumer("log", 200, 10000)
 end
 
 dtAnalytics.enableLog(true)
@@ -61,8 +64,8 @@ properties["#bundle_id"] = "com.example"
 sdk:track(acId, dtId, "current_online", properties)
 
 local profiles = {}
-profiles["#city"] = "beijing"
-profiles["#province"] = "beijing"
+profiles["city"] = "beijing"
+profiles["province"] = "beijing"
 profiles["nickName"] = "nick name 123"
 profiles["userLevel"] = 0
 profiles["userPoint"] = 0
