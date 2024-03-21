@@ -25,7 +25,7 @@ local dtAnalytics = require("src.DataTowerSdk")
 dtAnalytics.enableLog(true)
 
 local consumer = dtAnalytics.DTLogConsumer("./log", 200, 10 * 1024 * 1024)
-local sdk = dtAnalytics(consumer)
+local sdk = dtAnalytics(consumer, false)
 
 ---
 

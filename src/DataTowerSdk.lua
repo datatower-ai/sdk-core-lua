@@ -73,7 +73,7 @@ end
 ---@param properties table
 ---@param superProperties table
 ---@param dynamicSuperPropertiesTracker function
-local function upload(dtId, acId, eventType, eventName, properties, superProperties, dynamicSuperPropertiesTracker)
+local function upload(dtId, acId, eventType, eventName, properties, superProperties, dynamicSuperPropertiesTracker, debug)
     local finalProperties, presetProperties = divide(properties)
     local dynamicSuperProperties = {}
     if dynamicSuperPropertiesTracker ~= nil and type(dynamicSuperPropertiesTracker) == "function" then
@@ -98,12 +98,15 @@ local function upload(dtId, acId, eventType, eventName, properties, superPropert
         local millTime = socket.gettime()
         eventJson["#event_time"] = math.floor(millTime * 1000)
     end
+    if debug ~= nil and type(debug) == type(true) then
+        eventJson["#debug"] = debug
+    end
     local mergeProperties = {}
     if eventType == "track" then
-        mergeProperties = Util.mergeTables(mergeProperties, superProperties)
-        mergeProperties = Util.mergeTables(mergeProperties, dynamicSuperProperties)
+    mergeProperties = Util.mergeTables(mergeProperties, superProperties)
+    mergeProperties = Util.mergeTables(mergeProperties, dynamicSuperProperties)
     end
-    mergeProperties["#sdk_type"] = DTAnalytics.platForm
+    mergeProperties["#sdk_type"] = DTAnalytics.platform
     mergeProperties["#sdk_version_name"] = DTAnalytics.version
     mergeProperties = Util.mergeTables(mergeProperties, finalProperties)
     eventJson["properties"] = mergeProperties
@@ -115,19 +118,20 @@ local function upload(dtId, acId, eventType, eventName, properties, superPropert
     mergeProperties = nil
     eventJson = nil
     return ret
-end
+    end
 
 ---
 --- Init analytics instance
 ---@param self any
 ---@param consumer any consumer
-DTAnalytics = class(function(self, consumer)
+DTAnalytics = class(function(self, consumer, debug)
     if consumer == nil or type(consumer) ~= "table" or consumer.consumerProps == nil then
         DTLog.error("consumer params is invalidate.")
         return
     end
     self.superProperties = {}
     self.dynamicSuperPropertiesTracker = nil
+    self.debug = debug
     dt_base.init(consumer.consumerProps)
 
     DTLog.info("SDK init success")
@@ -321,7 +325,7 @@ function DTAnalytics:setDynamicSuperProperties(callback)
 end
 
 
-DTAnalytics.platForm = "dt_lua_sdk"
+DTAnalytics.platform = "dt_lua_sdk"
 DTAnalytics.version = "1.0.0"
 
 function Util.mergeTables(...)
