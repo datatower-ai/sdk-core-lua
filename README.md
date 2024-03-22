@@ -16,15 +16,15 @@
 1. Install Prerequisites (See section below).
 2. Get the latest [release](https://github.com/datatower-ai/sdk-core-lua/releases/latest).
 3. Download `DataTowerSdk.lua`.
-4. Download a .so file base on your:
+4. Download a .so/.dll file base on your:
    - Lua interpreter version (lua51, lua52, lua53, lua54, ...),
    - Operating System (Linux, macOS, Windows, ...),
    - CPU architecture (x86_64, aarch64, ...).
-5. Rename downloaded .so file to `dt_core_lua.so`
+5. Rename downloaded .so file to `dt_core_lua.so` (`dt_core_lua.dll` for .dll file)
 6. Place them at the same directory in the project.
 7. Finally, `dt = require("DataTowerSdk")`.
 
-> Feel free to contact us, if no .so file is met your requirements.
+> Feel free to contact us, if no .so/.dll file is met your requirements.
 
 ## Install Prerequisites
 - `luarocks install uuid`
