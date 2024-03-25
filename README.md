@@ -10,7 +10,7 @@
 
 # DataTower.ai - Core - Lua | Server
 
-> This SDK is intended to work with [FileScout]().
+> This SDK is intended to work with [FileScout](https://docs.datatower.ai/docs/FileScout-shi-yong-zhi-nan).
 
 ## Getting Started
 1. Install Prerequisites (See section below).
