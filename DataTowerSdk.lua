@@ -1,22 +1,17 @@
 -- DT LuaSDK
-function getDivider()
-    return package.config:sub(1,1)
+function loadBaseLib()
+--     local divider = package.config:sub(1,1)
+--     local suffix = divider == "\\" and "dll" or "so"
+--     local pathStr = debug.getinfo(2, "S").source:sub(2)
+--     local path = pathStr:match("(.*" .. divider .. ")")
+--     if path == nil then
+--         return nil
+--     end
+--     package.cpath = package.cpath .. ";" .. path .. "?." .. suffix .. ";"
+    return require("dt_core_lua")
 end
-function getDynSuffix()
-    return package.config:sub(1,1) == "\\" and "dll" or "so"
-end
-function script_path()
-    local str = debug.getinfo(2, "S").source:sub(2)
-    local result = str:match("(.*" .. getDivider() .. ")")
-    if result == nil then
-        return ""
-    end
-    return result
-end
-package.cpath = package.cpath .. ";" .. script_path() .. "?." .. getDynSuffix() .. ";"
-local dt_base = require("dt_core_lua")
+local dt_base = loadBaseLib()
 
-local socket = require("socket")
 local Util = {}
 local DTLog = {}
 
@@ -56,25 +51,6 @@ local function class(base, _ctor)
     return c
 end
 
-local function divide(properties)
-    local presetProperties = {}
-    local finalProperties = {}
-    for key, value in pairs(properties) do
-        if (key == "#android_id" or key == "#event_syn" or key == "#bundle_id" or key == "#event_time"
-                or key == "#app_id" or key == "#gaid" or key == "#dt_id" or key == "#acid"
-                or key == "#event_name" or key == "#event_type" or key == "#debug"
-        ) then
-            presetProperties[key] = value
-        else
-            finalProperties[key] = value
-        end
-    end
-    if (presetProperties["#event_syn"] == nil) then
-        presetProperties["#event_syn"] = Util.create_uuid()
-    end
-    return finalProperties, presetProperties
-end
-
 ---
 ---@param dtId string
 ---@param acId string
@@ -84,51 +60,34 @@ end
 ---@param superProperties table
 ---@param dynamicSuperPropertiesTracker function
 local function upload(dtId, acId, eventType, eventName, properties, superProperties, dynamicSuperPropertiesTracker, debug)
-    local finalProperties, presetProperties = divide(properties)
     local dynamicSuperProperties = {}
     if dynamicSuperPropertiesTracker ~= nil and type(dynamicSuperPropertiesTracker) == "function" then
         dynamicSuperProperties = dynamicSuperPropertiesTracker()
     end
-    local eventJson = {}
-    if acId ~= nil and string.len(acId) ~= 0 then
-        eventJson["#acid"] = tostring(acId)
-    end
-    if dtId ~= nil and string.len(dtId) ~= 0 then
-        eventJson["#dt_id"] = tostring(dtId)
-    end
-    eventJson["#event_type"] = eventType
-    if eventName ~= nil and string.len(eventName) ~= 0 then
-        eventJson["#event_name"] = tostring(eventName)
-    end
-    -- preset properties
-    for key, value in pairs(presetProperties) do
-        eventJson[key] = value
-    end
-    if presetProperties["#event_time"] == nil then
-        local millTime = socket.gettime()
-        eventJson["#event_time"] = math.floor(millTime * 1000)
-    end
-    if debug ~= nil and type(debug) == type(true) then
-        eventJson["#debug"] = debug
-    end
-    local mergeProperties = {}
-    if eventType == "track" then
-    mergeProperties = Util.mergeTables(mergeProperties, superProperties)
-    mergeProperties = Util.mergeTables(mergeProperties, dynamicSuperProperties)
-    end
-    mergeProperties["#sdk_type"] = DTAnalytics.platform
-    mergeProperties["#sdk_version_name"] = DTAnalytics.version
-    mergeProperties = Util.mergeTables(mergeProperties, finalProperties)
-    eventJson["properties"] = mergeProperties
 
-    local ret = 0;
-    ret = dt_base.add_event(eventJson)
-    presetProperties = nil
-    finalProperties = nil
-    mergeProperties = nil
-    eventJson = nil
-    return ret
+    if acId ~= nil and string.len(acId) ~= 0 then
+        properties["#acid"] = tostring(acId)
     end
+
+    if dtId ~= nil and string.len(dtId) ~= 0 then
+        properties["#dt_id"] = tostring(dtId)
+    end
+
+    properties["#event_type"] = eventType
+    properties["#event_name"] = tostring(eventName)
+
+    if debug ~= nil and type(debug) == type(true) then
+        properties["#debug"] = debug
+    end
+    if eventType == "track" then
+        properties = Util.mergeTables(properties, superProperties)
+        properties = Util.mergeTables(properties, dynamicSuperProperties)
+    end
+    properties["#sdk_type"] = DTAnalytics.platform
+
+    result = dt_base.add_event(properties)
+    return result
+end
 
 ---
 --- Init analytics instance
@@ -319,6 +278,7 @@ end
 ---@param fileNamePrefix string
 DTAnalytics.DTLogConsumer = class(function(self, logPath, batchNum, fileSize, fileNamePrefix)
     self.consumerProps = {
+        ["consumer"] = "log",
         ["path"] = logPath,
         ["max_batch_len"] = batchNum,
         ["name_prefix"] = fileNamePrefix,
@@ -336,7 +296,6 @@ end
 
 
 DTAnalytics.platform = "dt_lua_sdk"
-DTAnalytics.version = "1.0.0"
 
 function Util.mergeTables(...)
     local tabs = { ... }
@@ -369,11 +328,6 @@ function Util.startWith(str, substr)
     else
         return true
     end
-end
-
-function Util.create_uuid()
-    local uuidLib = require("uuid")
-    return uuidLib()
 end
 
 Util.enableLog = false

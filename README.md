@@ -8,24 +8,26 @@
     </a>
 </p>
 
-# DataTower.ai - Core - Lua | Server
+# DataTower.ai Lua SDK | Server
+This repository is used for publication purpose of Lua packages, and refers to [this repo](https://github.com/datatower-ai/sdk-core-base).
 
-> This SDK is intended to work with [FileScout](https://docs.datatower.ai/docs/FileScout-shi-yong-zhi-nan).
+> ⚠ This SDK is designed to work with [FileScout](https://docs.datatower.ai/docs/FileScout-shi-yong-zhi-nan).
 
 ## Getting Started
-1. Install Prerequisites (See section below).
-2. Get the latest [release](https://github.com/datatower-ai/sdk-core-lua/releases/latest).
-3. Download `DataTowerSdk.lua`.
-4. Download a .so/.dll file base on your:
-   - Lua interpreter version (lua51, lua52, lua53, lua54, ...),
-   - Operating System (Linux, macOS, Windows, ...),
-   - CPU architecture (x86_64, aarch64, ...).
-5. Rename downloaded .so file to `dt_core_lua.so` (`dt_core_lua.dll` for .dll file)
-6. Place them at the same directory in the project.
-7. Finally, `dt = require("DataTowerSdk")`.
+**With Luarocks**
+1. Get the [latest release](https://github.com/datatower-ai/sdk-core-lua/releases/latest).
+2. Download a `*.src.rock` file base on your:
+    - Lua interpreter version (lua51, lua52, lua53, lua54, ...),
+    - Operating System (Linux, macOS, Windows, ...),
+    - CPU architecture (x86_64, aarch64, ...).
+3. Rename downloaded `*.src.rock` file to `dt-lua-sdk-{version}.src.rock`
+   - Removes the prefix part: `{luaXx}-{OS}-{Arch}-`
+4. Install the rock with Luarocks
+   ```bash
+   luarocks install dt-lua-sdk-{version}.src.rock
+   #example:
+   luarocks install dt-lua-sdk-1.0.0-1.src.rock
+   ```
+5. Finally, `dt = require("DataTowerSdk")`.
 
-> Feel free to contact us, if no .so/.dll file is met your requirements.
-
-## Install Prerequisites
-- `luarocks install uuid`
-- `luarocks install luasocket`
+> Feel free to contact us, if no release file is met your requirements.
